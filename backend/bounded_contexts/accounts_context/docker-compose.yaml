@@ -14,8 +14,16 @@ services:
     build:
       context: ../../
       dockerfile: bounded_contexts/accounts_context/accounts_context/api_svc/Dockerfile
-    command: sh -c "cd /app/bounded_contexts/accounts_context && /etc/poetry/bin/poetry run start_api_svc"
+    command:
+      sh -c "cd /app/bounded_contexts/accounts_context/accounts_context/api_svc &&\
+      /etc/poetry/bin/poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
     container_name: accounts_context_api
+    volumes:
+      - ./accounts_context/api_svc:/app/bounded_contexts/accounts_context/accounts_context/api_svc
+      - ./accounts_context/alembic:/app/bounded_contexts/accounts_context/accounts_context/alembic
+      - ./accounts_context/db:/app/bounded_contexts/accounts_context/accounts_context/db
+      - ./accounts_context/config.py:/app/bounded_contexts/accounts_context/accounts_context/config.py
+      - ../../libs/common_lib:/app/libs/common_lib
     env_file:
       - .env
     ports:
