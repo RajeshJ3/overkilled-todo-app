@@ -10,11 +10,16 @@ from uuid import uuid4
 # lib
 from common_lib.hashing import get_hashed_password, check_password
 from common_lib.jwt import get_access_token
+from events_framework.utils.common_utils import event_message_builder
+from events_framework.utils.rabbitmq_utils import publish_to_rabbitmq_queue
 
 # svc
 from accounts_context.api_svc.dependencies import verify_auth
 from accounts_context.db.connection import db_dependency
 from accounts_context.db.models import User
+from accounts_context.utils.events.helpers import get_event_message_metadata
+from accounts_context.utils.events.queues import Queue
+from accounts_context.utils.events.types import EventType
 
 
 class RegistrationPayload(BaseModel):
@@ -64,6 +69,17 @@ async def registration(
     user = User(**payload_dict)
     db.add(user)
     db.commit()
+
+    # publish message to a queue/topic
+    message_payload = {
+        "id": user.id.__str__(),
+        "full_name": user.full_name,
+        "email": user.email,
+    }
+    message_dict = event_message_builder(
+        message_payload, EventType.USER_REGISTERED, meta=get_event_message_metadata()
+    )
+    await publish_to_rabbitmq_queue(message_dict, Queue.USERS)
 
     # get access_token
     to_encode = {"user_id": user.id.__str__()}

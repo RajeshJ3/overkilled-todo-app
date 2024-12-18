@@ -29,10 +29,12 @@ COPY $BUILD_SERVICE_CONTEXT/alembic.ini                             $SERVICE_CON
 COPY $BUILD_SERVICE_CONTEXT/config.py                               $SERVICE_CONTEXT/config.py
 COPY $BUILD_SERVICE_CONTEXT/alembic                                 $SERVICE_CONTEXT/alembic
 COPY $BUILD_SERVICE_CONTEXT/db                                      $SERVICE_CONTEXT/db
+COPY $BUILD_SERVICE_CONTEXT/utils                                   $SERVICE_CONTEXT/utils
 COPY $BUILD_SERVICE_CONTEXT/$SERVICE_NAME                           $SERVICE_CONTEXT/$SERVICE_NAME
 
 # libs
 COPY $BUILD_LIB_CONTEXT/common_lib                                  $LIB_CONTEXT/common_lib
+COPY $BUILD_LIB_CONTEXT/events_framework                            $LIB_CONTEXT/events_framework
 
 # installing dependencies
 RUN cd $BC_PATH && /etc/poetry/bin/poetry install

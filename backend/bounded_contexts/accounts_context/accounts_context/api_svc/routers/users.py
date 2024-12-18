@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("")
+@router.get("/")
 async def get_current_user(request: Request):
     user: User = request.state.user
 

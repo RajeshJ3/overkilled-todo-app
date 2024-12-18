@@ -9,6 +9,8 @@ services:
     volumes:
       - ./mount/:/var/lib/postgresql/data
     restart: on-failure
+    networks:
+      - overkilled_network
 
   accounts_context_api:
     build:
@@ -22,8 +24,10 @@ services:
       - ./accounts_context/api_svc:/app/bounded_contexts/accounts_context/accounts_context/api_svc
       - ./accounts_context/alembic:/app/bounded_contexts/accounts_context/accounts_context/alembic
       - ./accounts_context/db:/app/bounded_contexts/accounts_context/accounts_context/db
+      - ./accounts_context/utils:/app/bounded_contexts/accounts_context/accounts_context/utils
       - ./accounts_context/config.py:/app/bounded_contexts/accounts_context/accounts_context/config.py
       - ../../libs/common_lib:/app/libs/common_lib
+      - ../../libs/events_framework:/app/libs/events_framework
     env_file:
       - .env
     ports:
@@ -31,3 +35,9 @@ services:
     restart: on-failure
     depends_on:
       - accounts_context_db
+    networks:
+      - overkilled_network
+
+networks:
+  overkilled_network:
+    external: true

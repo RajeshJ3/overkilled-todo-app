@@ -1,0 +1,28 @@
+services:
+  nginx:
+    networks:
+      - overkilled_network
+    image: nginx:alpine
+    container_name: overkilled_nginx
+    ports:
+      - 8080:80
+    restart: on-failure
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/index.html:/usr/share/nginx/html/index.html
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: overkilled_rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./mount/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./mount/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - overkilled_network
+
+networks:
+  overkilled_network:
+    external: true

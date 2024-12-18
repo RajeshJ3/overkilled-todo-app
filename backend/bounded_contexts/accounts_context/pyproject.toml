@@ -10,12 +10,15 @@ alembic = "^1.14.0"
 psycopg2-binary = "^2.9.10"
 fastapi = {extras = ["standard"], version = "^0.115.6"}
 common_lib = "^0.1.0"
+events_framework = "^0.1.0"
 
 [tool.poetry.group.local.dependencies]
 common_lib = { path = "../../libs/common_lib", develop = true }
+events_framework = { path = "../../libs/events_framework", develop = true }
 
 [tool.poetry.group.remote.dependencies]
 common_lib = { path = "../../libs/common_lib", develop = false }
+events_framework = { path = "../../libs/events_framework", develop = false }
 
 [build-system]
 requires = ["poetry-core"]
