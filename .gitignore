@@ -2,3 +2,6 @@
 __pycache__/
 mount/
 *.env
+
+# exclude
+!example.*
