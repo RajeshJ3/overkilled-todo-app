@@ -1,0 +1,25 @@
+services:
+  accounts_context_db:
+    image: postgres:alpine
+    container_name: accounts_context_db
+    env_file:
+      - .db.env
+    ports:
+      - 15432:5432
+    volumes:
+      - ./mount/:/var/lib/postgresql/data
+    restart: on-failure
+
+  accounts_context_api:
+    build:
+      context: ../../
+      dockerfile: bounded_contexts/accounts_context/accounts_context/api_svc/Dockerfile
+    command: sh -c "cd /app/bounded_contexts/accounts_context && /etc/poetry/bin/poetry run start_api_svc"
+    container_name: accounts_context_api
+    env_file:
+      - .env
+    ports:
+      - 18000:8000
+    restart: on-failure
+    depends_on:
+      - accounts_context_db
