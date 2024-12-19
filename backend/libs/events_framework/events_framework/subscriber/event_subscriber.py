@@ -12,7 +12,10 @@ class EventSubscriber:
 
     async def get_one_message(self) -> MessageBrokerFactory:
         return await self.broker.get_one_message()
-
+    
+    async def get_messages(self, callback) -> None:
+        return await self.broker.get_messages(callback)
+    
     async def ack_message(self, message: MessageBrokerFactory) -> None:
         return await self.broker.ack_message(message)
 

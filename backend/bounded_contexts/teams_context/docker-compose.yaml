@@ -1,0 +1,64 @@
+services:
+  teams_context_db:
+    image: postgres:alpine
+    container_name: teams_context_db
+    env_file:
+      - .db.env
+    ports:
+      - 25432:5432
+    volumes:
+      - ./mount/:/var/lib/postgresql/data
+    restart: on-failure
+    networks:
+      - overkilled_network
+
+  teams_context_api:
+    build:
+      context: ../../
+      dockerfile: bounded_contexts/teams_context/teams_context/api_svc/Dockerfile
+    command:
+      sh -c "cd /app/bounded_contexts/teams_context/teams_context/api_svc &&\
+      /etc/poetry/bin/poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    container_name: teams_context_api
+    volumes:
+      - ./teams_context/api_svc:/app/bounded_contexts/teams_context/teams_context/api_svc
+      - ./teams_context/alembic:/app/bounded_contexts/teams_context/teams_context/alembic
+      - ./teams_context/db:/app/bounded_contexts/teams_context/teams_context/db
+      - ./teams_context/utils:/app/bounded_contexts/teams_context/teams_context/utils
+      - ./teams_context/config.py:/app/bounded_contexts/teams_context/teams_context/config.py
+      - ../../libs/common_lib:/app/libs/common_lib
+      - ../../libs/events_framework:/app/libs/events_framework
+    env_file:
+      - .env
+    ports:
+      - 28000:8000
+    restart: on-failure
+    depends_on:
+      - teams_context_db
+    networks:
+      - overkilled_network
+
+  # teams_context_event_consumer:
+  #   build:
+  #     context: ../../
+  #     dockerfile: bounded_contexts/teams_context/teams_context/event_consumer_svc/Dockerfile
+  #   container_name: teams_context_event_consumer
+  #   volumes:
+  #     - ./teams_context/event_consumer_svc:/app/bounded_contexts/teams_context/teams_context/event_consumer_svc
+  #     - ./teams_context/alembic:/app/bounded_contexts/teams_context/teams_context/alembic
+  #     - ./teams_context/db:/app/bounded_contexts/teams_context/teams_context/db
+  #     - ./teams_context/utils:/app/bounded_contexts/teams_context/teams_context/utils
+  #     - ./teams_context/config.py:/app/bounded_contexts/teams_context/teams_context/config.py
+  #     - ../../libs/common_lib:/app/libs/common_lib
+  #     - ../../libs/events_framework:/app/libs/events_framework
+  #   env_file:
+  #     - .env
+  #   restart: on-failure
+  #   depends_on:
+  #     - teams_context_db
+  #   networks:
+  #     - overkilled_network
+
+networks:
+  overkilled_network:
+    external: true

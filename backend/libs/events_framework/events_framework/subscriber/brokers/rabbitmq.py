@@ -46,6 +46,18 @@ class RabbitMQSubscriber(SubscriberBrokerFactory):
 
         return RabbitMQMessage(status, data)
 
+    async def get_messages(self, callback) -> None:
+
+        try:
+            self.channel.basic_consume(
+                queue=self.queue_name, on_message_callback=callback, auto_ack=False
+            )
+            self.channel.start_consuming()
+        except KeyboardInterrupt:
+            logging.info("Stopping consuming messages!")
+        finally:
+            self.connection.close()
+
     async def ack_message(self, message: RabbitMQMessage) -> None:
         self.channel.basic_ack(message.status.delivery_tag)
 

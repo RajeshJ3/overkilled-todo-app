@@ -4,7 +4,6 @@ from fastapi.security import HTTPBearer
 
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
-from typing import Annotated
 from uuid import uuid4
 
 # lib
@@ -14,7 +13,6 @@ from events_framework.utils.common_utils import event_message_builder
 from events_framework.utils.rabbitmq_utils import publish_to_rabbitmq_queue
 
 # svc
-from accounts_context.api_svc.dependencies import verify_auth
 from accounts_context.db.connection import db_dependency
 from accounts_context.db.models import User
 from accounts_context.utils.events.helpers import get_event_message_metadata
@@ -128,8 +126,3 @@ async def login(payload: LoginPayload, db: Session = Depends(db_dependency)):
     }
 
     return JSONResponse(content, status_code=http_status.HTTP_200_OK)
-
-
-@router.get("/verify/")
-async def verify(_: Annotated[None, Depends(verify_auth)]):
-    return JSONResponse({}, status_code=http_status.HTTP_200_OK)

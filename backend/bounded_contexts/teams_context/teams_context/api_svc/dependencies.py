@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 
 # svc
-from accounts_context.db.connection import db_dependency
-from accounts_context.db.models import User
+from teams_context.db.connection import db_dependency
+from teams_context.db.models import User
 
 
 security = HTTPBearer()

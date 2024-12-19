@@ -12,6 +12,10 @@ class SubscriberBrokerFactory:
         pass
 
     @abstractmethod
+    async def get_messages(self, *args, **kwargs) -> None:
+        pass
+
+    @abstractmethod
     async def consume_messages(self, *args, **kwargs) -> MessageBrokerFactory:
         pass
 

@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "teams-context"
+version = "0.1.0"
+description = ""
+authors = ["Rajesh Joshi <joshirajesh448@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+alembic = "^1.14.0"
+psycopg2-binary = "^2.9.10"
+fastapi = {extras = ["standard"], version = "^0.115.6"}
+common_lib = "^0.1.0"
+events_framework = "^0.1.0"
+
+[tool.poetry.group.local.dependencies]
+common_lib = { path = "../../libs/common_lib", develop = true }
+events_framework = { path = "../../libs/events_framework", develop = true }
+
+[tool.poetry.group.remote.dependencies]
+common_lib = { path = "../../libs/common_lib", develop = false }
+events_framework = { path = "../../libs/events_framework", develop = false }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start_api_svc = "teams_context.api_svc.run:main"
