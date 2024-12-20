@@ -1,0 +1,64 @@
+services:
+  todos_context_db:
+    image: postgres:alpine
+    container_name: todos_context_db
+    env_file:
+      - .db.env
+    ports:
+      - 35432:5432
+    volumes:
+      - ./mount/:/var/lib/postgresql/data
+    restart: on-failure
+    networks:
+      - overkilled_network
+
+  todos_context_api:
+    build:
+      context: ../../
+      dockerfile: bounded_contexts/todos_context/todos_context/api_svc/Dockerfile
+    command:
+      sh -c "cd /app/bounded_contexts/todos_context/todos_context/api_svc &&\
+      /etc/poetry/bin/poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    container_name: todos_context_api
+    volumes:
+      - ./todos_context/api_svc:/app/bounded_contexts/todos_context/todos_context/api_svc
+      - ./todos_context/alembic:/app/bounded_contexts/todos_context/todos_context/alembic
+      - ./todos_context/db:/app/bounded_contexts/todos_context/todos_context/db
+      - ./todos_context/utils:/app/bounded_contexts/todos_context/todos_context/utils
+      - ./todos_context/config.py:/app/bounded_contexts/todos_context/todos_context/config.py
+      - ../../libs/common_lib:/app/libs/common_lib
+      - ../../libs/events_framework:/app/libs/events_framework
+    env_file:
+      - .env
+    ports:
+      - 38000:8000
+    restart: on-failure
+    depends_on:
+      - todos_context_db
+    networks:
+      - overkilled_network
+
+  todos_context_event_consumer:
+    build:
+      context: ../../
+      dockerfile: bounded_contexts/todos_context/todos_context/event_consumer_svc/Dockerfile
+    container_name: todos_context_event_consumer
+    volumes:
+      - ./todos_context/event_consumer_svc:/app/bounded_contexts/todos_context/todos_context/event_consumer_svc
+      - ./todos_context/alembic:/app/bounded_contexts/todos_context/todos_context/alembic
+      - ./todos_context/db:/app/bounded_contexts/todos_context/todos_context/db
+      - ./todos_context/utils:/app/bounded_contexts/todos_context/todos_context/utils
+      - ./todos_context/config.py:/app/bounded_contexts/todos_context/todos_context/config.py
+      - ../../libs/common_lib:/app/libs/common_lib
+      - ../../libs/events_framework:/app/libs/events_framework
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - todos_context_db
+    networks:
+      - overkilled_network
+
+networks:
+  overkilled_network:
+    external: true
